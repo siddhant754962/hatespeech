@@ -437,7 +437,7 @@ with col2:
     st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Footer ---
-st.markdown("<footer>Made with ❤️ using Streamlit & Python</footer>", unsafe_allow_html=True)
+st.markdown("<footer>Made with ❤️ using Streamlit & Python by siddhant</footer>", unsafe_allow_html=True)
 
 
 
