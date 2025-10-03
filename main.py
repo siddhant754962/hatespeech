@@ -39,16 +39,16 @@ def load_nltk_data():
         nltk.download('wordnet')
 load_nltk_data()
 
-# --- Load Model and Vectorizer ---
+# --- Load Model and Vectorizer (UPDATED) ---
 @st.cache_resource
 def load_model_and_vectorizer():
     try:
-        # IMPORTANT: Make sure these paths are correct for your system
+        # Load files from the same folder as the app
         model = joblib.load("best_model.pkl")
         vectorizer = joblib.load("tfidf_vectorizer.pkl")
         return model, vectorizer
     except FileNotFoundError:
-        st.error("Model or vectorizer file not found. Please check the file paths in the script.")
+        st.error("Model or vectorizer file not found. Make sure 'best_model.pkl' and 'tfidf_vectorizer.pkl' are in the same folder as your app.py file.")
         st.stop()
 model, vectorizer = load_model_and_vectorizer()
 
