@@ -1,4 +1,4 @@
--------------------
+# -------------------------------
 # Hate Speech Recognition App
 # Streamlit + TF-IDF + ML Model
 # -------------------------------
@@ -43,12 +43,12 @@ load_nltk_data()
 @st.cache_resource
 def load_model_and_vectorizer():
     try:
-        # IMPORTANT: Make sure these paths are correct for your system
+        # Load files from the same folder as the app
         model = joblib.load("best_model.pkl")
         vectorizer = joblib.load("tfidf_vectorizer.pkl")
         return model, vectorizer
     except FileNotFoundError:
-        st.error("Model or vectorizer file not found. Please check the file paths in the script.")
+        st.error("Model or vectorizer file not found. Make sure 'best_model.pkl' and 'tfidf_vectorizer.pkl' are in the same folder as your app.py file.")
         st.stop()
 model, vectorizer = load_model_and_vectorizer()
 
@@ -290,7 +290,10 @@ col1, col2 = st.columns([0.5, 0.5], gap="large")
 with col1:
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
     st.markdown("#### Input Text for Analysis")
+    
+    # This text_area's value is controlled by session_state
     user_input = st.text_area("Input Text", st.session_state.user_input, key="text_input", label_visibility="collapsed")
+    
     analyze_button = st.button("🚀 Run Full Analysis")
     
     st.markdown("<hr style='margin: 1.5rem 0; border-color: #30363d;'>", unsafe_allow_html=True)
@@ -303,9 +306,21 @@ with col1:
             "Offensive Language": "What the hell is wrong with you, you stupid idiot? You are such a pathetic, worthless loser. Your opinion is complete garbage.",
             "Neutral Statement": "The new park downtown is scheduled to open next month and will feature a playground and several walking trails."
         }
+        
+        # UPDATED FUNCTION to be more reliable
         def set_example_text():
-            st.session_state.user_input = example_options[st.session_state.example_selector]
-        st.selectbox("Load an Example:", options=example_options.keys(), key="example_selector", on_change=set_example_text)
+            selected_example_key = st.session_state.example_selector
+            example_text_value = example_options[selected_example_key]
+            # Explicitly update both the general session state and the text_input widget's state
+            st.session_state.user_input = example_text_value
+            st.session_state.text_input = example_text_value
+
+        st.selectbox(
+            "Load an Example:",
+            options=example_options.keys(),
+            key="example_selector",
+            on_change=set_example_text
+        )
     
     with c2:
         with st.expander("ℹ️ About this Tool"):
@@ -322,6 +337,7 @@ with col1:
 
 # --- ANALYSIS LOGIC ---
 if analyze_button:
+    # When button is clicked, use the current value from the text_area
     st.session_state.user_input = user_input
     if user_input.strip() == "":
         st.toast("⚠️ Please provide text for analysis.", icon="✍️")
@@ -352,7 +368,6 @@ with col2:
         tab1, tab2, tab3, tab4 = st.tabs(["Summary", "Tone & Emotion", "Text Insights", "Export"])
 
         with tab1:
-            # --- Display Primary Result ---
             result_label = labels[prediction]
             st.markdown(f"""
             <div class="result-card result-card-{result_label.replace(' ', '')}">
@@ -362,7 +377,6 @@ with col2:
             """, unsafe_allow_html=True)
             st.progress(confidence, text=f"{confidence:.0%} Confidence")
 
-            # --- Detailed Metrics Grid ---
             st.markdown("<div class='metric-grid'>", unsafe_allow_html=True)
             st.markdown(f"<div class='metric-card'><div class='metric-label'>{sentiment}</div><div class='metric-value'>Sentiment</div></div>", unsafe_allow_html=True)
             st.markdown(f"<div class='metric-card'><div class='metric-label'>Grade {readability_grade}</div><div class='metric-value'>Readability</div></div>", unsafe_allow_html=True)
@@ -373,7 +387,6 @@ with col2:
             st.markdown("</div>", unsafe_allow_html=True)
 
         with tab2:
-             # --- Emotion Chart ---
             st.markdown("<h5 style='text-align:center; margin-top: 1rem;'>Emotional Tone</h5>", unsafe_allow_html=True)
             emotion_df = pd.DataFrame(emotions.items(), columns=['Emotion', 'Score']).sort_values('Emotion')
             
@@ -392,7 +405,6 @@ with col2:
 
 
         with tab3:
-            # --- Highlighted Text ---
             highlighted_output = highlight_words(st.session_state.user_input, prediction)
             st.markdown("<h5 style='margin-top: 1rem;'>Toxicity Highlights</h5>", unsafe_allow_html=True)
             st.markdown(f"<div style='background:#0d1117; padding: 1rem; border-radius:0.5rem; border:1px solid #30363d; min-height: 150px; max-height: 250px; overflow-y:auto;'>{highlighted_output}</div>", unsafe_allow_html=True)
@@ -425,7 +437,7 @@ with col2:
     st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Footer ---
-st.markdown("<footer>Made with ❤️ using Streamlit & Python by siddhant</footer>", unsafe_allow_html=True)
+st.markdown("<footer>Made with ❤️ using Streamlit & Python</footer>", unsafe_allow_html=True)
 
 
 
