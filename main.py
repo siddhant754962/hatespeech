@@ -1,4 +1,4 @@
-# -------------------------------
+-------------------
 # Hate Speech Recognition App
 # Streamlit + TF-IDF + ML Model
 # -------------------------------
@@ -39,16 +39,16 @@ def load_nltk_data():
         nltk.download('wordnet')
 load_nltk_data()
 
-# --- Load Model and Vectorizer (UPDATED) ---
+# --- Load Model and Vectorizer ---
 @st.cache_resource
 def load_model_and_vectorizer():
     try:
-        # Load files from the same folder as the app
+        # IMPORTANT: Make sure these paths are correct for your system
         model = joblib.load("best_model.pkl")
         vectorizer = joblib.load("tfidf_vectorizer.pkl")
         return model, vectorizer
     except FileNotFoundError:
-        st.error("Model or vectorizer file not found. Make sure 'best_model.pkl' and 'tfidf_vectorizer.pkl' are in the same folder as your app.py file.")
+        st.error("Model or vectorizer file not found. Please check the file paths in the script.")
         st.stop()
 model, vectorizer = load_model_and_vectorizer()
 
@@ -426,3 +426,11 @@ with col2:
 
 # --- Footer ---
 st.markdown("<footer>Made with ❤️ using Streamlit & Python by siddhant</footer>", unsafe_allow_html=True)
+
+
+
+
+
+
+
+
