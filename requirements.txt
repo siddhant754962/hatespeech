@@ -1,6 +1,13 @@
 streamlit
 scikit-learn==1.6.1
 joblib
+numpy
+scipy
 nltk
 pandas
 altair
+vega_datasets
+matplotlib
+python-dateutil
+charset-normalizer
+
